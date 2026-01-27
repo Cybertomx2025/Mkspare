@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MK SPARE PARTS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#f2f4f8;
+    --card:#ffffff;
+    --text:#111827;
+    --primary:#2563eb;
+}
+body.dark{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --text:#e5e7eb;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Poppins',sans-serif;
+}
+
+/* TOP BAR */
+.top-bar{
+    background:#111827;
+    color:#fff;
+    padding:8px;
+    text-align:center;
+    font-size:14px;
+}
+
+/* HEADER */
+header{
+    background:var(--card);
+    padding:15px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+.logo{display:flex;align-items:center;gap:15px;}
+.logo img{height:65px;}
+.brand-text{
+    font-family:'Montserrat',sans-serif;
+    font-size:32px;
+    font-weight:800;
+    background:linear-gradient(90deg,#ff6a00,#ee0979,#8e2de2,#4facfe);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+.menu-btn{font-size:26px;cursor:pointer;}
+
+/* SIDEBAR */
+.sidebar{
+    position:fixed;
+    left:-280px;
+    top:0;
+    width:280px;
+    height:100%;
+    background:#111827;
+    color:#fff;
+    padding:20px;
+    transition:.4s;
+    z-index:1000;
+}
+.sidebar.active{left:0;}
+.sidebar ul{list-style:none;}
+.sidebar li{
+    padding:12px;
+    border-bottom:1px solid #374151;
+    cursor:pointer;
+}
+.sidebar li:hover{background:#1f2937;}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    display:none;
+}
+.overlay.show{display:block;}
+
+/* HERO */
+.hero{
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
+    text-align:center;
+    padding:80px 20px 60px;
+}
+.hero h1{font-size:40px;}
+.hero p{opacity:.9;margin-bottom:25px;}
+
+/* SEARCH */
+.search-box{
+    max-width:520px;
+    margin:0 auto;
+    position:relative;
+}
+.search-box input{
+    width:100%;
+    padding:15px 55px 15px 20px;
+    border-radius:40px;
+    border:none;
+    font-size:16px;
+    outline:none;
+    box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+.search-box span{
+    position:absolute;
+    right:20px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:20px;
+    color:#2563eb;
+}
+
+/* PRODUCTS */
+.container{padding:30px;}
+.products{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:25px;
+}
+.product{
+    background:var(--card);
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+    overflow:hidden;
+}
+.product img{
+    width:100%;
+    aspect-ratio:3/4;
+    object-fit:cover;
+}
+.product-info{padding:15px;}
+
+/* PRODUCT LIST TABLE */
+#productListSection{
+    display:none;
+    padding:30px;
+}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:12px;}
+thead{background:var(--primary);color:#fff;}
+tbody tr{border-bottom:1px solid #e5e7eb;}
+
+/* FOOTER */
+footer{
+    background:#111827;
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    margin-top:40px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+<ul>
+    <li onclick="showProductTable()">🛠 Products</li>
+    <li onclick="toggleTheme()">🌗 Dark / Light</li>
+</ul>
+</div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="top-bar">
+📞 +880 17098-25152 | ✉ mkspareparts@gmail.com
+</div>
+
+<header>
+<div class="logo">
+<img src="https://i.imgur.com/25PWSh3.png">
+<div class="brand-text">MK SPARE PARTS</div>
+</div>
+<div class="menu-btn" onclick="openSidebar()">⋮</div>
+</header>
+
+<section class="hero">
+<h1>MWM Engine Spare Parts</h1>
+<p>No login required — view all products freely</p>
+
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="Search by name, brand or origin..." onkeyup="searchProducts()">
+<span>🔍</span>
+</div>
+</section>
+
+<!-- PRODUCT CARDS -->
+<div class="container">
+<div class="products" id="productCards"></div>
+</div>
+
+<!-- PRODUCT TABLE (ONLY ON BUTTON CLICK) -->
+<section id="productListSection">
+<h2>All Products</h2><br>
+<table>
+<thead>
+<tr><th>#</th><th>Name</th><th>Brand</th><th>Origin</th></tr>
+</thead>
+<tbody id="productTable"></tbody>
+</table>
+</section>
+
+<footer>
+© 2026 MK SPARE PARTS • Faridpur, Dhaka, Bangladesh
+</footer>
+
+<script>
+const products=[
+{name:"12189925 AIR FILTER",brand:"MWM",origin:"Germany",img:"https://i.imgur.com/tQXWcY0.png"},
+{name:"12128936 LUBE OIL FILTER",brand:"MWM",origin:"Germany",img:"https://images.unsplash.com/photo-1581090700227-1e37b190418e"},
+{name:"MWM TCG 2032 Engine",brand:"MWM",origin:"Germany",img:"https://images.unsplash.com/photo-1581091012184-5c8b1f0b3b95"},
+{name:"MWM Gas Engine Parts Kit",brand:"MWM",origin:"Germany",img:"https://images.unsplash.com/photo-1598257006458-087169a1f08c"}
+];
+
+const cardBox=document.getElementById("productCards");
+const table=document.getElementById("productTable");
+
+function renderCards(list){
+cardBox.innerHTML="";
+list.forEach(p=>{
+cardBox.innerHTML+=`
+<div class="product">
+<img src="${p.img}">
+<div class="product-info">
+<h4>${p.name}</h4>
+<p><b>Brand:</b> ${p.brand}</p>
+<p><b>Origin:</b> ${p.origin}</p>
+</div>
+</div>`;
+});
+}
+
+function searchProducts(){
+const q=document.getElementById("searchInput").value.toLowerCase();
+const filtered=products.filter(p=>
+p.name.toLowerCase().includes(q)||
+p.brand.toLowerCase().includes(q)||
+p.origin.toLowerCase().includes(q)
+);
+renderCards(filtered);
+}
+
+/* TABLE ONLY WHEN CLICK PRODUCTS */
+function showProductTable(){
+closeSidebar();
+table.innerHTML="";
+products.forEach((p,i)=>{
+table.innerHTML+=`
+<tr>
+<td>${i+1}</td>
+<td>${p.name}</td>
+<td>${p.brand}</td>
+<td>${p.origin}</td>
+</tr>`;
+});
+document.getElementById("productListSection").style.display="block";
+document.getElementById("productListSection").scrollIntoView({behavior:"smooth"});
+}
+
+function openSidebar(){sidebar.classList.add("active");overlay.classList.add("show");}
+function closeSidebar(){sidebar.classList.remove("active");overlay.classList.remove("show");}
+function toggleTheme(){document.body.classList.toggle("dark");}
+
+/* INITIAL LOAD */
+renderCards(products);
+</script>
+
+</body>
+</html>
