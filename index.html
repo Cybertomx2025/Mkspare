@@ -140,15 +140,44 @@ header{
 }
 .product-info{padding:15px;}
 
-/* PRODUCT LIST TABLE */
-#productListSection{
-    display:none;
-    padding:30px;
-}
+/* TABLE */
+#productListSection{display:none;padding:30px;}
 table{width:100%;border-collapse:collapse;}
 th,td{padding:12px;}
 thead{background:var(--primary);color:#fff;}
 tbody tr{border-bottom:1px solid #e5e7eb;}
+
+/* OWNER SLIDER */
+.owner-slider{
+    display:flex;
+    gap:24px;
+    overflow-x:auto;
+    scroll-behavior:smooth;
+    padding:20px 5px;
+    cursor:grab;
+    user-select:none;
+}
+.owner-slider:active{cursor:grabbing;}
+.owner-slider::-webkit-scrollbar{display:none;}
+.owner-slider{scrollbar-width:none;}
+
+.owner-card{
+    min-width:260px;
+    background:var(--card);
+    border-radius:10px;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,.12);
+    overflow:hidden;
+}
+.owner-card img{
+    width:100%;
+    aspect-ratio:3/4;
+    object-fit:cover;
+}
+.owner-info{padding:15px;}
+.owner-info h4{margin-bottom:4px;}
+.owner-info p{font-size:14px;color:#555;}
+.owner-info small{display:block;margin-top:8px;color:var(--primary);}
 
 /* FOOTER */
 footer{
@@ -167,6 +196,7 @@ footer{
 <div class="sidebar" id="sidebar">
 <ul>
     <li onclick="showProductTable()">🛠 Products</li>
+    <li onclick="showOwners()">👤 Management Teams</li>
     <li onclick="toggleTheme()">🌗 Dark / Light</li>
 </ul>
 </div>
@@ -187,9 +217,8 @@ footer{
 <section class="hero">
 <h1>MWM Engine Spare Parts</h1>
 <p>No login required — view all products freely</p>
-
 <div class="search-box">
-<input type="text" id="searchInput" placeholder="Search by name, brand or origin..." onkeyup="searchProducts()">
+<input type="text" id="searchInput" placeholder="Search Products By Name & Part No..." onkeyup="searchProducts()">
 <span>🔍</span>
 </div>
 </section>
@@ -199,15 +228,56 @@ footer{
 <div class="products" id="productCards"></div>
 </div>
 
-<!-- PRODUCT TABLE (ONLY ON BUTTON CLICK) -->
+<!-- PRODUCT TABLE -->
 <section id="productListSection">
 <h2>All Products</h2><br>
 <table>
-<thead>
-<tr><th>#</th><th>Name</th><th>Brand</th><th>Origin</th></tr>
-</thead>
+<thead><tr><th>#</th><th>Name</th><th>Brand</th><th>Origin</th></tr></thead>
 <tbody id="productTable"></tbody>
 </table>
+</section>
+
+<!-- OWNER SECTION -->
+<section id="ownerSection" class="container" style="display:none;">
+<h2>Management Team</h2>
+
+<div class="owner-slider" id="ownerSlider">
+    <div class="owner-card">
+        <img src="https://i.imgur.com/5ZfMV7I.jpeg">
+        <div class="owner-info">
+            <h4>Md.Shohidul Islam</h4>
+            <p>Chairman</p>
+            <small>📞 +8801321 135 707</small>
+        </div>
+    </div>
+
+    <div class="owner-card">
+        <img src="https://i.imgur.com/PnvgVx1.jpeg">
+        <div class="owner-info">
+            <h4>Md. Shafikul Islam</h4>
+            <p>Managing Director</p>
+            <small>📞 +8801714 615 869</small>
+        </div>
+    </div>
+
+    <div class="owner-card">
+        <img src="https://i.imgur.com/UrBlisj.jpeg">
+        <div class="owner-info">
+            <h4>Md.Shohidul (Islam)</h4>
+            <p>Store Incharge.</p>
+            <small>📞 +8801704 121 738</small>
+        </div>
+    </div>
+
+    <div class="owner-card">
+        <img src="https://i.imgur.com/opIS2jg.jpeg">
+        <div class="owner-info">
+            <h4>Md.Munna Khan</h4>
+            <p>Commercial-Store & Sales</p>
+            <small>📞 +880 1321-135713</small>
+        </div>
+    </div>
+</div>
 </section>
 
 <footer>
@@ -224,6 +294,8 @@ const products=[
 
 const cardBox=document.getElementById("productCards");
 const table=document.getElementById("productTable");
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("overlay");
 
 function renderCards(list){
 cardBox.innerHTML="";
@@ -239,40 +311,55 @@ cardBox.innerHTML+=`
 </div>`;
 });
 }
+renderCards(products);
 
 function searchProducts(){
 const q=document.getElementById("searchInput").value.toLowerCase();
-const filtered=products.filter(p=>
-p.name.toLowerCase().includes(q)||
-p.brand.toLowerCase().includes(q)||
+renderCards(products.filter(p =>
+p.name.toLowerCase().includes(q) ||
+p.brand.toLowerCase().includes(q) ||
 p.origin.toLowerCase().includes(q)
-);
-renderCards(filtered);
+));
 }
 
-/* TABLE ONLY WHEN CLICK PRODUCTS */
 function showProductTable(){
 closeSidebar();
+document.getElementById("productListSection").style.display="block";
+document.getElementById("ownerSection").style.display="none";
 table.innerHTML="";
 products.forEach((p,i)=>{
-table.innerHTML+=`
-<tr>
-<td>${i+1}</td>
-<td>${p.name}</td>
-<td>${p.brand}</td>
-<td>${p.origin}</td>
-</tr>`;
+table.innerHTML+=`<tr><td>${i+1}</td><td>${p.name}</td><td>${p.brand}</td><td>${p.origin}</td></tr>`;
 });
-document.getElementById("productListSection").style.display="block";
 document.getElementById("productListSection").scrollIntoView({behavior:"smooth"});
+}
+
+function showOwners(){
+closeSidebar();
+document.getElementById("ownerSection").style.display="block";
+document.getElementById("productListSection").style.display="none";
+document.getElementById("ownerSection").scrollIntoView({behavior:"smooth"});
 }
 
 function openSidebar(){sidebar.classList.add("active");overlay.classList.add("show");}
 function closeSidebar(){sidebar.classList.remove("active");overlay.classList.remove("show");}
 function toggleTheme(){document.body.classList.toggle("dark");}
 
-/* INITIAL LOAD */
-renderCards(products);
+/* DRAG SCROLL */
+const slider=document.getElementById("ownerSlider");
+let isDown=false,startX,scrollLeft;
+slider.addEventListener("mousedown",e=>{
+isDown=true;
+startX=e.pageX-slider.offsetLeft;
+scrollLeft=slider.scrollLeft;
+});
+slider.addEventListener("mouseleave",()=>isDown=false);
+slider.addEventListener("mouseup",()=>isDown=false);
+slider.addEventListener("mousemove",e=>{
+if(!isDown)return;
+e.preventDefault();
+const x=e.pageX-slider.offsetLeft;
+slider.scrollLeft=scrollLeft-(x-startX)*1.5;
+});
 </script>
 
 </body>
